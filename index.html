@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KJELDGAARD — Creative Intelligence Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <script src="https://unpkg.com/lucide-react@0.383.0/dist/umd/lucide-react.js"></script>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+    const {
+      AlertTriangle, TrendingUp, TrendingDown, ArrowRight, Zap, Target, Eye,
+      BarChart3, Sparkles, Shield, CheckCircle, Bell, Rocket, Play, Clock,
+      ChevronRight, Send, Edit3, Filter, Pause2, MoreVertical,
+      MessageSquare, Users, Lightbulb, ThumbsUp, ThumbsDown, Minus, X,
+      PanelLeftOpen, PanelLeftClose, Brain, UserCircle, Bot
+    } = lucideReact;
+    const {
+      AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+      Cell, PieChart, Pie, LineChart, Line
+    } = Recharts;
+
+    const KjeldgaardDashboard = () => {
+  const [resolveClicked, setResolveClicked] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState('discovery');
+  const [chatInput, setChatInput] = useState('');
+  const chatEndRef = useRef(null);
+
+  // Product Discovery conversation — AI PM conducting stakeholder interview with Thomas K
+  const discoveryMessages = [
+    {
+      role: 'system',
+      text: 'Product Discovery Session — Thomas K (Kjeldgaard CEO)',
+      time: 'Apr 9, 2026'
+    },
+    {
+      role: 'ai',
+      speaker: 'Product AI',
+      text: 'Thomas, tak for din tid. Jeg vil gerne forstå hvad der virkelig driver din forretning. Lad os starte enkelt — hvad er den ene ting der ville gøre den største forskel for Kjeldgaard lige nu?',
+      time: '10:02'
+    },
+    {
+      role: 'user',
+      speaker: 'Thomas K',
+      text: 'Vi bruger for meget tid på at lave video content. Jeg vil have et system der kan analysere hvad der virker og generere nye versioner automatisk. Og det SKAL fungere på dansk.',
+      time: '10:03'
+    },
+    {
+      role: 'ai',
+      speaker: 'Product AI',
+      text: 'Forstået. Når du siger "analysere hvad der virker" — mener du ren ROAS/CPA metrics, eller også kvalitative ting som hook-stil, awareness niveau, og creative format?',
+      time: '10:04'
+    },
+    {
+      role: 'user',
+      speaker: 'Thomas K',
+      text: 'Begge dele! ClickMagick giver mig tallene, men jeg mangler forståelsen. Hvorfor virker én video bedre end en anden? Er det hooket? Er det awareness-niveauet? Det bruger jeg timer på at gennemskue manuelt.',
+      time: '10:05'
+    },
+    {
+      role: 'ai',
+      speaker: 'Product AI',
+      text: 'Det er præcis the intelligence gap. ClickMagick = data. Du mangler = fortolkning + handling. Lad mig grave dybere — du nævnte video content. Hvordan ser din nuværende produktionsflow ud?',
+      time: '10:06'
+    },
+    {
+      role: 'user',
+      speaker: 'Thomas K',
+      text: 'Jeg har Production Factory — det er mit command center med alle asset-kategorier. 13 hovedkategorier, 115 subcategorier. Alt organiseret efter Schwartz awareness levels. Men at gå fra indsigt til ny video tager stadig dage.',
+      time: '10:07'
+    },
+    {
+      role: 'extraction',
+      text: 'Extracting user stories from conversation...',
+      time: '10:08'
+    },
+  ];
+
+  // Extracted user stories with AI product team decisions
+  const userStories = [
+    {
+      id: 'US-001',
+      story: 'Som marketingchef vil jeg automatisk vide HVORFOR en video performer — ikke bare at den gør det.',
+      source: 'Thomas K, Apr 9',
+      priority: 'must',
+      decision: 'build',
+      phase: 1,
+      reasoning: 'Core value prop — this IS the intelligence layer. Schwartz classification + hook analysis. ClickMagick gives the what, we give the why.',
+      effort: 'M',
+      advisorVotes: { build: 4, defer: 0, kill: 0 }
+    },
+    {
+      id: 'US-002',
+      story: 'Som indholdsproducent vil jeg have AI-genererede ad briefs med danske hooks baseret på top performers.',
+      source: 'Thomas K, Apr 9',
+      priority: 'must',
+      decision: 'build',
+      phase: 2,
+      reasoning: 'High value but depends on US-001 intelligence layer. Phase 2 — creative generation after classification works.',
+      effort: 'L',
+      advisorVotes: { build: 3, defer: 1, kill: 0 }
+    },
+    {
+      id: 'US-003',
+      story: 'Som CEO vil jeg have et daily dashboard med kill/scale recommendations klar om morgenen.',
+      source: 'Thomas K, Apr 9',
+      priority: 'must',
+      decision: 'build',
+      phase: 1,
+      reasoning: 'Immediate ROI. Morning report = daily proof of value. Builds trust for retainer. Low effort, high visibility.',
+      effort: 'S',
+      advisorVotes: { build: 4, defer: 0, kill: 0 }
+    },
+    {
+      id: 'US-004',
+      story: 'Jeg vil have automatisk publicering til Meta Ads direkte fra systemet.',
+      source: 'Thomas K, Apr 9',
+      priority: 'nice',
+      decision: 'defer',
+      phase: 3,
+      reasoning: 'High complexity, requires Meta API write access + approval flow. Defer — manual review is fine for now and builds trust. Revisit Q3.',
+      effort: 'XL',
+      advisorVotes: { build: 1, defer: 3, kill: 0 }
+    },
+    {
+      id: 'US-005',
+      story: 'Kan systemet også styre Google Shopping og email campaigns?',
+      source: 'Thomas K, Apr 9',
+      priority: 'nice',
+      decision: 'defer',
+      phase: 3,
+      reasoning: 'Scope creep signal. Stay focused on Meta video ads — that\'s where 80% of spend and opportunity is. Multi-channel is a retainer expansion play for Month 4+.',
+      effort: 'XL',
+      advisorVotes: { build: 0, defer: 2, kill: 2 }
+    },
+    {
+      id: 'US-006',
+      story: 'Alt content SKAL føles naturligt på dansk. Ikke Google Translate-agtigt.',
+      source: 'Thomas K, Apr 9',
+      priority: 'must',
+      decision: 'build',
+      phase: 1,
+      reasoning: 'Non-negotiable for Danish market. Danishifier skill needed — not just translation but cultural tone. Affects every output.',
+      effort: 'M',
+      advisorVotes: { build: 4, defer: 0, kill: 0 }
+    },
+  ];
+
+  // Product advisor personas
+  const advisors = [
+    { name: 'Strategy', emoji: '🎯', color: 'text-blue-600' },
+    { name: 'Technical', emoji: '⚙️', color: 'text-slate-600' },
+    { name: 'Creative', emoji: '🎨', color: 'text-purple-600' },
+    { name: 'Revenue', emoji: '💰', color: 'text-emerald-600' },
+  ];
+
+  // Real data
+  const performanceData = {
+    period: 'Apr 3–9, 2026',
+    totals: {
+      cost: 29566,
+      clicks: 3347,
+      cpc: 8.83,
+      engaged: 474,
+      ecr: 14.2,
+      sales: 236,
+      newCustomers: 85,
+      cac: 347.85,
+      revenue: 153126,
+      roas: 5.18,
+      roi: 418,
+      aov: 648.84,
+      profit: 123559,
+      customers: 233,
+      repeatCustomers: 148,
+    },
+    channels: [
+      {
+        name: 'Facebook',
+        sales: 116,
+        roas: 4.57,
+        cost: 15600,
+        revenue: 71304,
+        profit: 58766,
+        status: 'scale',
+        trend: 'up',
+      },
+      {
+        name: 'Instagram',
+        sales: 60,
+        roas: 4.5,
+        cost: 8200,
+        revenue: 36900,
+        profit: 29664,
+        status: 'scale',
+        trend: 'stable',
+      },
+      {
+        name: 'Google Shopping',
+        sales: 40,
+        roas: null,
+        cost: 0,
+        revenue: 26948,
+        profit: 26948,
+        status: 'keep',
+        trend: 'up',
+      },
+      {
+        name: 'Organic',
+        sales: 18,
+        roas: null,
+        cost: 0,
+        revenue: 10980,
+        profit: 10980,
+        status: 'keep',
+        trend: 'stable',
+      },
+      {
+        name: 'an (Audience Network)',
+        sales: 2,
+        roas: 0.23,
+        cost: 4621,
+        revenue: 1079,
+        profit: -3542,
+        status: 'kill',
+        trend: 'down',
+      },
+    ],
+  };
+
+  const schwartzData = [
+    {
+      level: 'Unaware',
+      label: 'Cold audience, education-first',
+      adsRunning: 3,
+      avgRoas: 2.1,
+      spend: 4200,
+      status: 'test',
+    },
+    {
+      level: 'Problem Aware',
+      label: 'Knows skin issues, not solutions',
+      adsRunning: 8,
+      avgRoas: 3.8,
+      spend: 8500,
+      status: 'scale',
+    },
+    {
+      level: 'Solution Aware',
+      label: 'Knows serums work, not which one',
+      adsRunning: 12,
+      avgRoas: 5.2,
+      spend: 9800,
+      status: 'scale',
+    },
+    {
+      level: 'Product Aware',
+      label: 'Knows Kjeldgaard, comparing',
+      adsRunning: 6,
+      avgRoas: 6.8,
+      spend: 4200,
+      status: 'scale',
+    },
+    {
+      level: 'Most Aware',
+      label: 'Past customers, retargeting',
+      adsRunning: 4,
+      avgRoas: 8.4,
+      spend: 2866,
+      status: 'optimize',
+    },
+  ];
+
+  const creatives = [
+    {
+      id: 1,
+      name: 'Skin Barrier Hero',
+      format: 'Video 35s',
+      awareness: 'Solution Aware',
+      hook: 'Great skin starts with a healthy skin barrier',
+      hookDa: 'Flot hud starter med en sund hudbarriere',
+      roas: 5.8,
+      spend: 3200,
+      sales: 24,
+      status: 'scale',
+      trend: 'up',
+    },
+    {
+      id: 2,
+      name: 'Before/After Testimonial',
+      format: 'Video 45s',
+      awareness: 'Problem Aware',
+      hook: 'I tried everything for my dry skin',
+      hookDa: 'Jeg prøvede alt for min tørre hud',
+      roas: 4.2,
+      spend: 2800,
+      sales: 18,
+      status: 'scale',
+      trend: 'stable',
+    },
+    {
+      id: 3,
+      name: 'Product Close-Up 3D',
+      format: 'Video 15s',
+      awareness: 'Product Aware',
+      hook: 'The science behind Kjeldgaard Barrier',
+      hookDa: 'Videnskaben bag Kjeldgaard Barrier',
+      roas: 6.1,
+      spend: 1800,
+      sales: 14,
+      status: 'scale',
+      trend: 'up',
+    },
+    {
+      id: 4,
+      name: 'UGC Testimonial Maria',
+      format: 'Video 60s',
+      awareness: 'Problem Aware',
+      hook: 'My skin changed in 2 weeks',
+      hookDa: 'Min hud ændrede sig på 2 uger',
+      roas: 3.1,
+      spend: 2100,
+      sales: 8,
+      status: 'keep',
+      trend: 'down',
+    },
+    {
+      id: 5,
+      name: 'Carousel Product Range',
+      format: 'Carousel 5x',
+      awareness: 'Most Aware',
+      hook: 'Your complete skincare routine',
+      hookDa: 'Din komplette hudplejerutine',
+      roas: 7.2,
+      spend: 1400,
+      sales: 12,
+      status: 'scale',
+      trend: 'up',
+    },
+    {
+      id: 6,
+      name: 'Audience Network Banner',
+      format: 'Banner 300x250',
+      awareness: 'Unaware',
+      hook: 'Discover the barrier secret',
+      hookDa: 'Opdag barriere-hemmeligheden',
+      roas: 0.23,
+      spend: 4621,
+      sales: 2,
+      status: 'kill',
+      trend: 'down',
+    },
+  ];
+
+  const pipeline = [
+    {
+      priority: 1,
+      concept: 'Solution Aware video med hudbarriere-fokus',
+      reason:
+        'Solution Aware has 5.2 ROAS — highest volume opportunity. Current best performer is "Skin Barrier Hero". Produce 3 variations with different hooks.',
+      format: 'Video 30s',
+      targetAwareness: 'Solution Aware',
+      estimatedRoas: '4.8–5.5',
+      hooks: [
+        'Din hudbarriere fortjener bedre',
+        'Hvorfor din hud ikke holder på fugten',
+        '3 tegn på en svækket hudbarriere',
+      ],
+    },
+    {
+      priority: 2,
+      concept: 'Product Aware retargeting med social proof',
+      reason:
+        'Product Aware has highest ROAS (6.8) but only 6 ads. Add testimonial-style retargeting to convert warm audience.',
+      format: 'Video 45s + Carousel',
+      targetAwareness: 'Product Aware',
+      estimatedRoas: '6.0–7.5',
+      hooks: [
+        '748 danske kvinder har allerede skiftet',
+        'Se hvorfor Maria valgte Kjeldgaard',
+        'Resultaterne taler for sig selv',
+      ],
+    },
+    {
+      priority: 3,
+      concept: 'Kill "an" source, reallocate to Problem Aware',
+      reason:
+        'Audience Network is -77% ROI. Reallocate 4,621 DKK/week to Problem Aware testing (currently 3.8 ROAS with room to scale).',
+      format: 'Budget reallocation',
+      targetAwareness: 'Problem Aware',
+      estimatedRoas: '3.5–4.2',
+      hooks: [
+        'Kender du disse 5 tegn på hudproblemer?',
+        'Din hud prøver at fortælle dig noget',
+        'Tør hud? Det handler om din barriere',
+      ],
+    },
+  ];
+
+  const generatedAds = [
+    {
+      id: 'GEN-001',
+      title: 'Hudbarriere Hero v2',
+      status: 'ready_for_review',
+      type: 'Video Ad',
+      duration: '30s',
+      awareness: 'Solution Aware',
+      basedOn: 'Top performer: Skin Barrier Hero (5.8x ROAS)',
+      hooks: [
+        { da: 'Din hudbarriere er nøglen til smuk hud', en: 'Your skin barrier is the key to beautiful skin' },
+        { da: 'Stop med at kæmpe mod tør hud — styrk din barriere', en: 'Stop fighting dry skin — strengthen your barrier' },
+        { da: 'Vidste du at 90% af hudproblemer starter med barrieren?', en: 'Did you know 90% of skin problems start with the barrier?' },
+        { da: 'Sådan genopbygger du din hudbarriere på 14 dage', en: 'How to rebuild your skin barrier in 14 days' }
+      ],
+      script: 'Hook → Problem agitation (tør, irriteret hud) → Solution reveal (Kjeldgaard Barrier serum) → Social proof (748 kvinder) → CTA (Prøv nu med 30 dages garanti)',
+      voiceover: 'Danish AI Voice — Ready',
+      estimatedRoas: '4.8–5.5x',
+      targetBudget: '3,200 DKK/week',
+      assets: ['Product 3D Video', 'Before/After Images', 'Serum Close-up'],
+      confidence: 87
+    },
+    {
+      id: 'GEN-002',
+      title: 'Social Proof Karrusel',
+      status: 'ready_for_review',
+      type: 'Carousel Ad',
+      duration: '5 slides',
+      awareness: 'Product Aware',
+      basedOn: 'High ROAS segment: Product Aware (6.8x) — low ad count (6)',
+      hooks: [
+        { da: '748 danske kvinder har allerede skiftet', en: '748 Danish women have already switched' },
+        { da: 'Se hvad Maria, 52, oplevede efter 2 uger', en: 'See what Maria, 52, experienced after 2 weeks' },
+        { da: 'Derfor vælger flere og flere Kjeldgaard', en: 'Why more and more choose Kjeldgaard' },
+        { da: 'Resultaterne taler for sig selv', en: 'The results speak for themselves' }
+      ],
+      script: 'Slide 1: Hook + testimonial quote → Slide 2: Before/after → Slide 3: Product ingredients → Slide 4: More testimonials → Slide 5: CTA + guarantee',
+      voiceover: 'N/A (Static carousel)',
+      estimatedRoas: '6.0–7.5x',
+      targetBudget: '2,100 DKK/week',
+      assets: ['Product Pictures', 'Reviews / Customer Comments', 'Before and After Images'],
+      confidence: 92
+    },
+    {
+      id: 'GEN-003',
+      title: 'Problem Aware Uddannelse',
+      status: 'generating',
+      type: 'Video Ad',
+      duration: '45s',
+      awareness: 'Problem Aware',
+      basedOn: 'Budget reallocation from killed "an" source (4,621 DKK/week freed)',
+      hooks: [
+        { da: 'Kender du disse 5 tegn på en svækket hudbarriere?', en: 'Do you know these 5 signs of a weakened skin barrier?' },
+        { da: 'Din hud prøver at fortælle dig noget', en: 'Your skin is trying to tell you something' },
+        { da: 'Tør hud? Det handler ikke om fugtighedscreme', en: 'Dry skin? It\'s not about moisturizer' },
+        { da: 'Hvorfor din hudplejerutine måske gør det værre', en: 'Why your skincare routine might be making it worse' }
+      ],
+      script: 'Hook → 5 symptoms education → Barrier science explanation → Product introduction → Before/after → CTA',
+      voiceover: 'Danish AI Voice — Generating...',
+      estimatedRoas: '3.5–4.2x',
+      targetBudget: '4,621 DKK/week',
+      assets: ['Product Tester Interviews', 'Product 3D Video', 'Before and After Images'],
+      confidence: 78
+    }
+  ];
+
+  const productionQueue = [
+    { id: 'VID-001', name: 'Hudbarriere Hero v2', status: 'Script Ready', voiceover: 'Pending', editing: 'Not started', eta: 'Apr 15' },
+    { id: 'VID-002', name: 'Testimonial Maria Remix', status: 'Approved', voiceover: 'Complete', editing: 'In progress', eta: 'Apr 14' },
+    { id: 'VID-003', name: 'Problem Aware Uddannelse', status: 'Generating', voiceover: 'Generating', editing: 'Not started', eta: 'Apr 16' }
+  ];
+
+  const weeklyTrend = [
+    { day: 'Mon', roas: 4.2, revenue: 18500 },
+    { day: 'Tue', roas: 4.8, revenue: 21200 },
+    { day: 'Wed', roas: 5.1, revenue: 22800 },
+    { day: 'Thu', roas: 4.9, revenue: 20100 },
+    { day: 'Fri', roas: 5.4, revenue: 24600 },
+    { day: 'Sat', roas: 5.8, revenue: 23400 },
+    { day: 'Sun', roas: 5.2, revenue: 22526 }
+  ];
+
+  const readyToLaunch = [
+    {
+      name: 'Social Proof Karrusel — Product Aware',
+      platform: 'Facebook + Instagram',
+      budget: '2,100 DKK/week',
+      audience: 'Product Aware, 45+ kvinder, DK',
+      startDate: 'Apr 14, 2026',
+      creatives: 1,
+      estimatedRoas: '6.0–7.5x',
+      status: 'ready'
+    },
+    {
+      name: 'Testimonial Maria Remix — Problem Aware',
+      platform: 'Facebook',
+      budget: '2,800 DKK/week',
+      audience: 'Problem Aware, 45-65, skincare interest',
+      startDate: 'Apr 14, 2026',
+      creatives: 1,
+      estimatedRoas: '3.8–4.5x',
+      status: 'ready'
+    }
+  ];
+
+  const activeCampaigns = [
+    { name: 'Skin Barrier Hero — SA', platform: 'FB+IG', dailySpend: 457, dailyRevenue: 2651, roas: 5.8, status: 'running', daysActive: 12 },
+    { name: 'Before/After Testimonial — PA', platform: 'FB', dailySpend: 400, dailyRevenue: 1680, roas: 4.2, status: 'running', daysActive: 8 },
+    { name: 'Product Close-Up 3D — PrA', platform: 'FB+IG', dailySpend: 257, dailyRevenue: 1568, roas: 6.1, status: 'running', daysActive: 15 },
+    { name: 'UGC Maria — PA', platform: 'FB', dailySpend: 300, dailyRevenue: 930, roas: 3.1, status: 'monitoring', daysActive: 21 },
+    { name: 'Carousel Range — MA', platform: 'IG', dailySpend: 200, dailyRevenue: 1440, roas: 7.2, status: 'running', daysActive: 6 }
+  ];
+
+  // Helper functions
+  const formatDKK = (value) => {
+    if (value === null || value === undefined) return '—';
+    return new Intl.NumberFormat('da-DK', {
+      style: 'currency',
+      currency: 'DKK',
+      minimumFractionDigits: 0,
+    })
+      .format(value)
+      .replace('kr.', 'DKK');
+  };
+
+  const getROASColor = (roas) => {
+    if (roas >= 4) return 'text-emerald-600 font-bold';
+    if (roas >= 2) return 'text-amber-600 font-bold';
+    return 'text-red-600 font-bold';
+  };
+
+  const getAwarenessColor = (level) => {
+    const colors = {
+      Unaware: 'bg-slate-100 text-slate-700 border border-slate-300',
+      'Problem Aware': 'bg-blue-100 text-blue-700 border border-blue-300',
+      'Solution Aware': 'bg-cyan-100 text-cyan-700 border border-cyan-300',
+      'Product Aware': 'bg-indigo-100 text-indigo-700 border border-indigo-300',
+      'Most Aware': 'bg-purple-100 text-purple-700 border border-purple-300',
+    };
+    return colors[level] || colors.Unaware;
+  };
+
+  const getStatusColor = (status) => {
+    if (status === 'scale')
+      return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+    if (status === 'keep')
+      return 'bg-amber-50 text-amber-700 border border-amber-200';
+    if (status === 'kill') return 'bg-red-50 text-red-700 border border-red-200';
+    if (status === 'test')
+      return 'bg-blue-50 text-blue-700 border border-blue-200';
+    if (status === 'optimize')
+      return 'bg-purple-50 text-purple-700 border border-purple-200';
+    return 'bg-gray-50 text-gray-700 border border-gray-200';
+  };
+
+  const getStatusBgColor = (status) => {
+    if (status === 'scale') return 'bg-emerald-500';
+    if (status === 'keep') return 'bg-amber-500';
+    if (status === 'kill') return 'bg-red-500';
+    if (status === 'test') return 'bg-blue-500';
+    if (status === 'optimize') return 'bg-purple-500';
+    return 'bg-gray-500';
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex">
+
+      {/* PRODUCT DISCOVERY SIDEBAR */}
+      <div className={`${sidebarOpen ? 'w-96' : 'w-0'} flex-shrink-0 transition-all duration-300 overflow-hidden border-r border-slate-200 bg-white relative`}>
+        <div className="w-96 h-screen flex flex-col sticky top-0">
+          {/* Sidebar Header */}
+          <div className="bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] text-white p-4 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-[#C9A962]" />
+              <div>
+                <h2 className="text-sm font-bold">Product Intelligence</h2>
+                <p className="text-[10px] text-slate-300">AI-Powered Discovery & Decisions</p>
+              </div>
+            </div>
+            <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-slate-600/30 rounded transition-colors">
+              <X className="w-4 h-4 text-slate-300" />
+            </button>
+          </div>
+
+          {/* Sidebar Tabs */}
+          <div className="flex border-b border-slate-200 flex-shrink-0">
+            {[
+              { id: 'discovery', label: 'Discovery', icon: MessageSquare },
+              { id: 'stories', label: 'User Stories', icon: Lightbulb },
+              { id: 'decisions', label: 'Decisions', icon: Users },
+            ].map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setSidebarTab(tab.id)}
+                  className={`flex-1 py-2.5 text-[11px] font-medium flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+                    sidebarTab === tab.id
+                      ? 'border-[#C9A962] text-[#0A1628] bg-slate-50'
+                      : 'border-transparent text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Sidebar Content */}
+          <div className="flex-1 overflow-y-auto">
+
+            {/* DISCOVERY TAB — Chat */}
+            {sidebarTab === 'discovery' && (
+              <div className="flex flex-col h-full">
+                <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                  {discoveryMessages.map((msg, idx) => (
+                    <div key={idx}>
+                      {msg.role === 'system' && (
+                        <div className="text-center py-2">
+                          <span className="text-[10px] bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">{msg.text}</span>
+                          <p className="text-[9px] text-slate-400 mt-1">{msg.time}</p>
+                        </div>
+                      )}
+                      {msg.role === 'ai' && (
+                        <div className="flex gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#1E3A5F] to-[#C9A962] flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <Bot className="w-3.5 h-3.5 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-semibold text-[#1E3A5F] mb-0.5">{msg.speaker} <span className="font-normal text-slate-400">{msg.time}</span></p>
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg rounded-tl-none p-2.5">
+                              <p className="text-xs text-slate-700 leading-relaxed">{msg.text}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {msg.role === 'user' && (
+                        <div className="flex gap-2 flex-row-reverse">
+                          <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <UserCircle className="w-3.5 h-3.5 text-blue-600" />
+                          </div>
+                          <div className="flex-1 flex flex-col items-end">
+                            <p className="text-[10px] font-semibold text-blue-700 mb-0.5">{msg.speaker} <span className="font-normal text-slate-400">{msg.time}</span></p>
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg rounded-tr-none p-2.5">
+                              <p className="text-xs text-blue-900 leading-relaxed">{msg.text}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {msg.role === 'extraction' && (
+                        <div className="flex items-center gap-2 py-2 px-3 bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-lg">
+                          <Sparkles className="w-3.5 h-3.5 text-[#C9A962] animate-pulse" />
+                          <p className="text-[11px] text-[#0A1628] font-medium">{msg.text}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Chat Input */}
+                <div className="p-3 border-t border-slate-200 flex-shrink-0">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Ask a follow-up question..."
+                      className="flex-1 text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C9A962] focus:ring-1 focus:ring-[#C9A962]/30"
+                    />
+                    <button className="px-3 py-2 bg-[#1E3A5F] hover:bg-[#0A1628] text-white rounded-lg transition-colors">
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-slate-400 mt-1.5 text-center">AI extracts user stories from every conversation automatically</p>
+                </div>
+              </div>
+            )}
+
+            {/* USER STORIES TAB */}
+            {sidebarTab === 'stories' && (
+              <div className="p-3 space-y-3">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-bold text-[#0A1628]">{userStories.length} stories extracted</p>
+                  <div className="flex gap-1">
+                    <span className="text-[9px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded font-medium">{userStories.filter(s => s.decision === 'build').length} build</span>
+                    <span className="text-[9px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded font-medium">{userStories.filter(s => s.decision === 'defer').length} defer</span>
+                  </div>
+                </div>
+
+                {userStories.map((story) => (
+                  <div key={story.id} className={`border rounded-lg p-3 transition-all hover:shadow-sm ${
+                    story.decision === 'build' ? 'border-emerald-200 bg-emerald-50/50' :
+                    story.decision === 'defer' ? 'border-amber-200 bg-amber-50/50' :
+                    'border-red-200 bg-red-50/50'
+                  }`}>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <span className="text-[9px] font-bold text-slate-500">{story.id}</span>
+                      <div className="flex items-center gap-1">
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                          story.decision === 'build' ? 'bg-emerald-200 text-emerald-800' :
+                          story.decision === 'defer' ? 'bg-amber-200 text-amber-800' :
+                          'bg-red-200 text-red-800'
+                        }`}>
+                          {story.decision === 'build' ? '✓ BUILD' : story.decision === 'defer' ? '⏸ DEFER' : '✗ KILL'}
+                        </span>
+                        <span className="text-[9px] px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded font-medium">P{story.phase}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-[#0A1628] font-medium leading-relaxed mb-2">"{story.story}"</p>
+                    <p className="text-[10px] text-slate-600 italic mb-2">{story.reasoning}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] text-slate-400">{story.source}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[9px] text-slate-500">Council:</span>
+                        <span className="text-[9px] text-emerald-600 font-bold">{story.advisorVotes.build}</span>
+                        <ThumbsUp className="w-2.5 h-2.5 text-emerald-500" />
+                        <span className="text-[9px] text-amber-600 font-bold">{story.advisorVotes.defer}</span>
+                        <Minus className="w-2.5 h-2.5 text-amber-500" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* DECISIONS TAB — Product Council */}
+            {sidebarTab === 'decisions' && (
+              <div className="p-3 space-y-4">
+                {/* Council Header */}
+                <div className="bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] rounded-lg p-3 text-white">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-4 h-4 text-[#C9A962]" />
+                    <p className="text-xs font-bold">Product Council</p>
+                  </div>
+                  <p className="text-[10px] text-slate-300 leading-relaxed">4 AI advisors evaluated {userStories.length} user stories. Consensus: build the intelligence layer first (Phase 1), defer direct publishing (Phase 3).</p>
+                  <div className="flex gap-3 mt-3">
+                    {advisors.map((a, i) => (
+                      <div key={i} className="flex items-center gap-1">
+                        <span className="text-sm">{a.emoji}</span>
+                        <span className="text-[10px] text-slate-300">{a.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Phase Roadmap */}
+                <div>
+                  <p className="text-xs font-bold text-[#0A1628] mb-2">Phase Roadmap</p>
+
+                  {/* Phase 1 */}
+                  <div className="border border-emerald-200 rounded-lg p-3 mb-2 bg-emerald-50/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-600 text-white rounded">PHASE 1</span>
+                        <span className="text-[10px] text-slate-600">Weeks 1–4</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-700">NOW</span>
+                    </div>
+                    <p className="text-xs font-semibold text-[#0A1628] mb-1">Intelligence Layer</p>
+                    <div className="space-y-1">
+                      {userStories.filter(s => s.phase === 1).map(s => (
+                        <div key={s.id} className="flex items-center gap-2">
+                          <CheckCircle className="w-3 h-3 text-emerald-600" />
+                          <p className="text-[10px] text-slate-700">{s.id}: {s.story.substring(0, 60)}...</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Phase 2 */}
+                  <div className="border border-blue-200 rounded-lg p-3 mb-2 bg-blue-50/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-600 text-white rounded">PHASE 2</span>
+                        <span className="text-[10px] text-slate-600">Weeks 5–8</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-blue-600">NEXT</span>
+                    </div>
+                    <p className="text-xs font-semibold text-[#0A1628] mb-1">Creative Generation</p>
+                    <div className="space-y-1">
+                      {userStories.filter(s => s.phase === 2).map(s => (
+                        <div key={s.id} className="flex items-center gap-2">
+                          <Clock className="w-3 h-3 text-blue-500" />
+                          <p className="text-[10px] text-slate-700">{s.id}: {s.story.substring(0, 60)}...</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Phase 3 */}
+                  <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-500 text-white rounded">PHASE 3</span>
+                        <span className="text-[10px] text-slate-600">Month 3+</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-500">DEFERRED</span>
+                    </div>
+                    <p className="text-xs font-semibold text-[#0A1628] mb-1">Automation & Multi-Channel</p>
+                    <div className="space-y-1">
+                      {userStories.filter(s => s.phase === 3).map(s => (
+                        <div key={s.id} className="flex items-center gap-2">
+                          <Pause2 className="w-3 h-3 text-slate-400" />
+                          <p className="text-[10px] text-slate-500">{s.id}: {s.story.substring(0, 60)}...</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Key Insight */}
+                <div className="p-3 bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Lightbulb className="w-3.5 h-3.5 text-[#C9A962]" />
+                    <p className="text-[10px] font-bold text-[#0A1628]">Council Insight</p>
+                  </div>
+                  <p className="text-[10px] text-slate-700 leading-relaxed">
+                    Thomas K asked for 6 things. We're building 3 now, deferring 2, and the council flagged 1 as scope creep. This is how you stay ahead of the client without drowning in feature requests.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div className="flex-1 min-w-0">
+
+      {/* SIDEBAR TOGGLE (floating) */}
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-50 bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] text-white px-2 py-4 rounded-r-lg shadow-lg hover:shadow-xl transition-all group border-y border-r border-[#C9A962]/30"
+        >
+          <div className="flex flex-col items-center gap-2">
+            <Brain className="w-4 h-4 text-[#C9A962] group-hover:scale-110 transition-transform" />
+            <span className="text-[9px] font-bold tracking-wider" style={{ writingMode: 'vertical-rl' }}>PRODUCT AI</span>
+          </div>
+        </button>
+      )}
+
+      {/* HEADER */}
+      <header className="bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] text-white shadow-lg border-b-2 border-[#C9A962]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Shield className="w-8 h-8 text-[#C9A962]" />
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">KJELDGAARD</h1>
+              <p className="text-xs text-slate-300 font-light">Creative Intelligence Platform</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="text-right mr-2">
+              <p className="text-xs font-medium text-white">Lørdag d. 12. april</p>
+              <p className="text-[10px] text-slate-400">Uge 15 · Morgenrapport</p>
+            </div>
+            <div className="h-8 w-px bg-slate-600"></div>
+            <div className="flex items-center gap-2 bg-blue-500/15 px-2.5 py-1 rounded-full border border-blue-400/30">
+              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+              <span className="text-blue-200 text-[10px] font-medium">ClickMagick</span>
+            </div>
+            <div className="flex items-center gap-2 bg-emerald-500/15 px-2.5 py-1 rounded-full border border-emerald-400/30">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+              <span className="text-emerald-200 text-[10px] font-medium">AI Active</span>
+            </div>
+            <button className="relative p-2 hover:bg-slate-600/30 rounded-lg transition-colors">
+              <Bell className="w-5 h-5 text-[#C9A962]" />
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">3</span>
+            </button>
+          </div>
+        </div>
+
+        {/* TAB NAVIGATION */}
+        <div className="border-t border-slate-600 px-6 flex gap-0">
+          {[
+            { id: 'dashboard', label: 'Dashboard', icon: BarChart3, badge: null },
+            { id: 'intelligence', label: 'Intelligence', icon: Sparkles, badge: 'core' },
+            { id: 'create', label: 'Create', icon: Play, badge: 'phase2' },
+            { id: 'publish', label: 'Publish', icon: Rocket, badge: 'phase2' }
+          ].map(tab => {
+            const IconComponent = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-3 flex items-center gap-2 text-sm font-medium border-b-2 transition-all ${
+                  activeTab === tab.id
+                    ? 'border-[#C9A962] text-[#C9A962] bg-slate-700/30'
+                    : 'border-transparent text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                <IconComponent className="w-4 h-4" />
+                {tab.label}
+                {tab.badge === 'phase2' && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C9A962]/20 text-[#C9A962] border border-[#C9A962]/30 font-semibold tracking-wide">PHASE 2</span>
+                )}
+                {tab.badge === 'core' && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-semibold tracking-wide">CORE</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </header>
+
+      {/* AI ACTION BANNER — not an "alert", a decision already made */}
+      {!resolveClicked && activeTab === 'dashboard' && (
+        <div className="bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] text-white px-6 py-4 border-b-2 border-[#C9A962]">
+          <div className="max-w-7xl mx-auto flex items-start justify-between gap-4">
+            <div className="flex gap-4 items-start flex-1">
+              <div className="w-8 h-8 rounded-full bg-[#C9A962]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Zap className="w-4 h-4 text-[#C9A962]" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-white text-sm">
+                  AI Decision: Audience Network paused and 4,621 DKK/week reallocated to Solution Aware
+                </p>
+                <p className="text-xs text-slate-300 mt-1">
+                  AN was returning 0.23x ROAS (-3,542 DKK/week loss). The system detected the pattern over 5 days, paused spend automatically, and redirected budget to your best segment (5.2x ROAS). Estimated impact: +24,028 DKK/month.
+                </p>
+                <div className="flex items-center gap-4 mt-2">
+                  <span className="text-[10px] text-red-400 font-medium px-2 py-0.5 bg-red-500/10 rounded border border-red-500/20">AN: PAUSED</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="text-[10px] text-emerald-400 font-medium px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">Solution Aware: +4,621 DKK/week</span>
+                  <span className="text-[10px] text-[#C9A962] font-medium px-2 py-0.5 bg-[#C9A962]/10 rounded border border-[#C9A962]/20">Net impact: +24,028 DKK/month</span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setResolveClicked(true)}
+              className="flex-shrink-0 px-4 py-2 bg-[#C9A962] text-[#0A1628] font-semibold rounded hover:bg-[#C9A962]/80 transition-colors text-xs"
+            >
+              Acknowledged
+            </button>
+          </div>
+        </div>
+      )}
+
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* TAB: DASHBOARD */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8">
+
+            {/* PERSONALIZED MORNING BRIEFING */}
+            <section className="bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] rounded-xl p-6 text-white">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-slate-400">Godmorgen, Thomas</p>
+                  <h2 className="text-2xl font-bold mt-1">Din forretning voksede 12% i denne uge</h2>
+                  <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+                    Revenue hit 153.126 DKK with 5.18x ROAS. Your AI identified 1 underperforming source and reallocated 4,621 DKK to higher-performing segments. 3 new ad concepts are ready for your review.
+                  </p>
+                </div>
+                <div className="text-right flex-shrink-0 ml-6">
+                  <div className="bg-[#C9A962]/15 border border-[#C9A962]/30 rounded-lg px-4 py-3">
+                    <p className="text-[10px] text-[#C9A962] font-semibold uppercase tracking-wider">AI saved you</p>
+                    <p className="text-2xl font-bold text-[#C9A962]">6.5 timer</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">denne uge</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* KEY METRICS ROW */}
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {/* Revenue */}
+              <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md hover:border-[#C9A962]/30 transition-all">
+                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">Revenue</p>
+                <p className="text-2xl font-bold text-[#0A1628] mt-1.5">
+                  {formatDKK(performanceData.totals.revenue)}
+                </p>
+                <div className="flex items-center gap-1 mt-2">
+                  <TrendingUp className="w-3 h-3 text-emerald-600" />
+                  <p className="text-xs text-emerald-600 font-semibold">+12%</p>
+                </div>
+              </div>
+
+              {/* ROAS */}
+              <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md hover:border-[#C9A962]/30 transition-all">
+                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">ROAS</p>
+                <p className="text-2xl font-bold text-[#0A1628] mt-1.5">
+                  {performanceData.totals.roas.toFixed(2)}x
+                </p>
+                <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full" style={{width: '86%'}}></div>
+                </div>
+              </div>
+
+              {/* Profit */}
+              <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md hover:border-[#C9A962]/30 transition-all">
+                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">Profit</p>
+                <p className="text-2xl font-bold text-emerald-600 mt-1.5">
+                  {formatDKK(performanceData.totals.profit)}
+                </p>
+                <p className="text-[10px] text-slate-500 mt-2">
+                  {((performanceData.totals.profit / performanceData.totals.revenue) * 100).toFixed(0)}% margin
+                </p>
+              </div>
+
+              {/* Active Campaigns */}
+              <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md hover:border-[#C9A962]/30 transition-all">
+                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">Campaigns</p>
+                <p className="text-2xl font-bold text-[#0A1628] mt-1.5">33</p>
+                <p className="text-[10px] text-slate-500 mt-2">
+                  5 channels active
+                </p>
+              </div>
+
+              {/* AI Actions — highlighted differently */}
+              <div className="bg-gradient-to-br from-[#0A1628] to-[#1E3A5F] rounded-lg p-5 shadow-sm border border-[#C9A962]/30 transition-all">
+                <p className="text-[#C9A962] text-xs font-medium uppercase tracking-wider">AI Actions</p>
+                <p className="text-2xl font-bold text-white mt-1.5">3</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-[10px] text-red-400 font-medium">1 killed</span>
+                  <span className="text-[10px] text-slate-500">·</span>
+                  <span className="text-[10px] text-emerald-400 font-medium">2 scaled</span>
+                </div>
+              </div>
+            </section>
+
+            {/* DATA SOURCE BANNER */}
+            <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <p className="text-xs text-blue-800">
+                <span className="font-bold">Data source: ClickMagick</span> — all metrics synced from your KJELDGAARDS project. Last sync: Apr 9, 2026 08:00. Our AI layer classifies, decides, and generates on top of this data.
+              </p>
+            </div>
+
+            {/* AI DECISIONS LOG — not a summary, a record of actions taken */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-[#C9A962]" />
+                  <h3 className="font-semibold text-[#0A1628]">AI Decisions This Week</h3>
+                </div>
+                <span className="text-[10px] px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold">Net impact: +24,028 DKK/mo</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-emerald-900 font-medium">Scaled Facebook budget +15%</p>
+                    <p className="text-[10px] text-emerald-700 mt-0.5">ROAS climbed to 4.57x over 5 days. +2,340 DKK/week expected.</p>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-600">DONE</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-800 font-medium">Instagram on 48h watch</p>
+                    <p className="text-[10px] text-slate-600 mt-0.5">Holding at 4.50x. If stable by Wednesday → auto-scale. 2 new creatives queued.</p>
+                  </div>
+                  <span className="text-xs font-bold text-amber-600">WATCHING</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                    <X className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-red-900 font-medium">Killed Audience Network</p>
+                    <p className="text-[10px] text-red-700 mt-0.5">0.23x ROAS, -3,542 DKK/week loss. Spend paused, budget redirected to Solution Aware (5.2x).</p>
+                  </div>
+                  <span className="text-xs font-bold text-red-600">KILLED</span>
+                </div>
+              </div>
+            </section>
+
+            {/* WEEKLY PERFORMANCE CHART */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <h3 className="font-semibold text-[#0A1628] mb-4">7-Day ROAS Trend</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={weeklyTrend}>
+                  <defs>
+                    <linearGradient id="colorRoas" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1E3A5F" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#1E3A5F" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `${value.toFixed(2)}x`} contentStyle={{ backgroundColor: '#0A1628', border: 'none', borderRadius: '8px', color: '#fff' }} />
+                  <Area type="monotone" dataKey="roas" stroke="#C9A962" fill="url(#colorRoas)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </section>
+
+            {/* NEEDS YOUR ATTENTION — things only a human should decide */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="font-semibold text-[#0A1628]">Needs Your Attention</h3>
+                <span className="text-[10px] px-2 py-0.5 bg-[#C9A962]/15 text-[#C9A962] rounded-full font-bold border border-[#C9A962]/30">3 items</span>
+              </div>
+              <div className="space-y-2">
+                <button onClick={() => setActiveTab('create')} className="w-full flex items-center gap-4 p-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-[#C9A962]/40 rounded-lg transition-all text-left group">
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <Play className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[#0A1628]">Review 3 AI-generated ad concepts</p>
+                    <p className="text-[10px] text-slate-600 mt-0.5">Based on your top performers. Est. ROAS: 4.8–7.5x. Approve to enter production queue.</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#C9A962] transition-colors" />
+                </button>
+                <button onClick={() => setActiveTab('publish')} className="w-full flex items-center gap-4 p-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-[#C9A962]/40 rounded-lg transition-all text-left group">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <Rocket className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[#0A1628]">2 campaigns ready to launch</p>
+                    <p className="text-[10px] text-slate-600 mt-0.5">Social Proof Karrusel + Testimonial Maria Remix. 4,900 DKK/week total. Approve to go live tomorrow.</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#C9A962] transition-colors" />
+                </button>
+                <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 border border-purple-200 rounded-lg">
+                  <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <Send className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[#0A1628]">Weekly report ready</p>
+                    <p className="text-[10px] text-slate-600 mt-0.5">Uge 15 performance report drafted. Review and send via Telegram.</p>
+                  </div>
+                  <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition-colors">Send Report</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* TAB: INTELLIGENCE */}
+        {activeTab === 'intelligence' && (
+          <div className="space-y-8">
+
+            {/* VALUE LAYER DISTINCTION */}
+            <section className="bg-gradient-to-r from-[#0A1628] to-[#1E3A5F] rounded-lg p-6 text-white">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="p-4 bg-white/10 rounded-lg border border-white/20">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    <p className="text-xs font-semibold text-blue-300 uppercase tracking-wider">ClickMagick handles</p>
+                  </div>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Clicks, conversions, ROAS, attribution, revenue tracking, channel split — all the raw performance data, already live.
+                  </p>
+                </div>
+                <div className="p-4 bg-[#C9A962]/15 rounded-lg border border-[#C9A962]/40">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-3 h-3 text-[#C9A962]" />
+                    <p className="text-xs font-semibold text-[#C9A962] uppercase tracking-wider">Our AI adds</p>
+                  </div>
+                  <p className="text-sm text-slate-200 leading-relaxed">
+                    Schwartz classification, creative intelligence, kill/scale decisions, hook generation, Danish copy, new ad briefs — the brain on top of the data.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* SCHWARTZ PERFORMANCE MATRIX */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-1">
+                  <h2 className="text-xl font-bold text-[#0A1628]">
+                    Schwartz Performance Matrix
+                  </h2>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#C9A962]/15 text-[#C9A962] border border-[#C9A962]/30 font-bold uppercase tracking-wider">Unique to Kjeldgaard</span>
+                </div>
+                <p className="text-sm text-slate-600 mt-1">
+                  Your creatives mapped to Schwartz awareness levels — no other tool does this. Scale what works, kill what doesn't.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {schwartzData.map((item) => {
+                  const maxRoas = Math.max(...schwartzData.map((d) => d.avgRoas));
+                  const roasPercent = (item.avgRoas / maxRoas) * 100;
+
+                  return (
+                    <div
+                      key={item.level}
+                      className="border border-slate-200 rounded-lg p-4 hover:border-[#C9A962]/40 hover:bg-slate-50 transition-all"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-semibold text-[#0A1628]">
+                              {item.level}
+                            </h3>
+                            <span className={`text-xs px-2 py-1 rounded-full border ${getStatusColor(item.status)}`}>
+                              {item.status === 'scale' && '📈 Scale'}
+                              {item.status === 'optimize' && '⚙️ Optimize'}
+                              {item.status === 'test' && '🔬 Test'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 mt-1">{item.label}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-[#0A1628]">
+                            {item.adsRunning} ads
+                          </p>
+                          <p className="text-xs text-slate-600">
+                            {formatDKK(item.spend)} spend
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 bg-gradient-to-r from-slate-200 to-slate-100 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#1E3A5F] to-[#C9A962] transition-all duration-300"
+                            style={{ width: `${roasPercent}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-lg font-bold text-[#1E3A5F] min-w-12 text-right">
+                          {item.avgRoas.toFixed(1)}x
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-900">
+                  <span className="font-semibold">💡 Insight:</span> Based on 7-day performance analysis, the system recommends: Increase Solution Aware budget by 20% (+1,960 DKK/week). Expected incremental revenue: ~10,192 DKK/week. This would increase weekly profit by approximately 8,232 DKK.
+                </p>
+              </div>
+            </section>
+
+            {/* CREATIVE PERFORMANCE GRID */}
+            <section>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-[#0A1628]">
+                  Creative Performance
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  Current campaigns across awareness levels.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {creatives.map((creative) => (
+                  <div
+                    key={creative.id}
+                    className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg hover:border-[#C9A962]/40 transition-all duration-300"
+                  >
+                    {/* Thumbnail */}
+                    <div className="h-32 bg-gradient-to-br from-[#1E3A5F] to-[#0A1628] flex items-center justify-center border-b border-slate-200">
+                      <div className="text-4xl opacity-40">🧴</div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 space-y-3">
+                      <div>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-[#0A1628] text-sm">
+                              {creative.name}
+                            </h3>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              {creative.format}
+                            </p>
+                          </div>
+                          {creative.trend === 'up' && (
+                            <TrendingUp className="w-4 h-4 text-emerald-600" />
+                          )}
+                          {creative.trend === 'down' && (
+                            <TrendingDown className="w-4 h-4 text-red-600" />
+                          )}
+                          {creative.trend === 'stable' && (
+                            <div className="w-4 h-4 border-2 border-amber-600 rounded"></div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <span
+                          className={`inline-block text-xs px-2 py-1 rounded border ${getAwarenessColor(creative.awareness)}`}
+                        >
+                          {creative.awareness}
+                        </span>
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-semibold text-[#0A1628]">
+                          {creative.hookDa}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1 italic">
+                          {creative.hook}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 space-y-2">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-xs text-slate-600">ROAS</span>
+                          <span className={`text-lg ${getROASColor(creative.roas)}`}>
+                            {creative.roas.toFixed(1)}x
+                          </span>
+                        </div>
+                        <div className="flex items-baseline justify-between text-xs">
+                          <span className="text-slate-600">Spend</span>
+                          <span className="font-semibold text-[#0A1628]">
+                            {formatDKK(creative.spend)}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline justify-between text-xs">
+                          <span className="text-slate-600">Sales</span>
+                          <span className="font-semibold text-[#0A1628]">
+                            {creative.sales}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100">
+                        <span
+                          className={`inline-block text-xs font-semibold px-2 py-1 rounded border ${getStatusColor(creative.status)}`}
+                        >
+                          {creative.status === 'scale' && '📈 Scale'}
+                          {creative.status === 'keep' && '➡️ Keep'}
+                          {creative.status === 'kill' && '⛔ Kill'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* CHANNEL BREAKDOWN */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <h3 className="font-semibold text-[#0A1628] mb-4">Channel Breakdown</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-slate-200">
+                    <tr>
+                      <th className="text-left py-3 px-3 font-semibold text-slate-700">Channel</th>
+                      <th className="text-right py-3 px-3 font-semibold text-slate-700">Sales</th>
+                      <th className="text-right py-3 px-3 font-semibold text-slate-700">ROAS</th>
+                      <th className="text-right py-3 px-3 font-semibold text-slate-700">Spend</th>
+                      <th className="text-right py-3 px-3 font-semibold text-slate-700">Revenue</th>
+                      <th className="text-right py-3 px-3 font-semibold text-slate-700">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {performanceData.channels.map((channel) => (
+                      <tr key={channel.name} className={channel.status === 'kill' ? 'bg-red-50' : ''}>
+                        <td className="py-3 px-3 font-medium text-[#0A1628]">{channel.name}</td>
+                        <td className="py-3 px-3 text-right">{channel.sales}</td>
+                        <td className="py-3 px-3 text-right">
+                          {channel.roas ? <span className={getROASColor(channel.roas)}>{channel.roas.toFixed(2)}x</span> : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right text-slate-700">{formatDKK(channel.cost)}</td>
+                        <td className="py-3 px-3 text-right font-semibold text-slate-900">{formatDKK(channel.revenue)}</td>
+                        <td className="py-3 px-3 text-right">
+                          <span className={`text-xs font-semibold px-2 py-1 rounded border ${getStatusColor(channel.status)}`}>
+                            {channel.status === 'scale' && '📈 Scale'}
+                            {channel.status === 'keep' && '➡️ Keep'}
+                            {channel.status === 'kill' && '⛔ Kill'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* TAB: CREATE */}
+        {activeTab === 'create' && (
+          <div className="space-y-8">
+
+            {/* PHASE 2 VISION BANNER */}
+            <div className="p-4 bg-gradient-to-r from-[#C9A962]/10 to-[#C9A962]/5 border border-[#C9A962]/30 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="w-4 h-4 text-[#C9A962]" />
+                <p className="text-sm font-bold text-[#0A1628]">Phase 2 Vision: AI Creative Generation</p>
+              </div>
+              <p className="text-xs text-slate-600">
+                This is where the system goes from intelligence to action — generating ad briefs, Danish hooks, and video scripts based on what's performing in ClickMagick. Weeks 5–8 deliverable.
+              </p>
+            </div>
+
+            {/* AI-GENERATED ADS READY FOR REVIEW */}
+            <section>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-[#0A1628]">
+                  AI-Generated Ads Ready for Review
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  Fresh creative briefs generated from top performers. Approve and queue for production.
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                {generatedAds.map((ad) => (
+                  <div key={ad.id} className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-[#C9A962]/40 transition-all">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-bold text-[#0A1628]">{ad.title}</h3>
+                          <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${ad.status === 'ready_for_review' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-amber-100 text-amber-700 border-amber-300 animate-pulse'}`}>
+                            {ad.status === 'ready_for_review' ? '✓ Ready for Review' : '⏳ Generating...'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-1">
+                          {ad.type} · {ad.duration}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`inline-block text-xs px-2 py-1 rounded border ${getAwarenessColor(ad.awareness)}`}>
+                          {ad.awareness}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-xs font-medium text-blue-900">Based on: {ad.basedOn}</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <p className="text-xs font-semibold text-slate-600 mb-2">Hooks (Danish)</p>
+                        <div className="space-y-2">
+                          {ad.hooks.map((hook, idx) => (
+                            <div key={idx} className="bg-slate-50 p-2 rounded border border-slate-200">
+                              <p className="text-xs font-medium text-[#0A1628]">{hook.da}</p>
+                              <p className="text-xs text-slate-600 italic mt-1">{hook.en}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-600 mb-1">Script Summary</p>
+                          <p className="text-xs text-slate-700 p-2 bg-slate-50 rounded border border-slate-200 leading-relaxed">{ad.script}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-600 mb-1">Voiceover</p>
+                          <p className="text-xs text-slate-700 font-medium">{ad.voiceover}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div className="p-3 bg-emerald-50 rounded border border-emerald-200">
+                        <p className="text-xs text-emerald-700 font-semibold">Est. ROAS</p>
+                        <p className="text-lg font-bold text-emerald-600">{ad.estimatedRoas}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded border border-slate-200">
+                        <p className="text-xs text-slate-600 font-semibold">Target Budget</p>
+                        <p className="text-lg font-bold text-[#0A1628]">{ad.targetBudget}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded border border-slate-200">
+                        <p className="text-xs text-slate-600 font-semibold">Assets</p>
+                        <p className="text-xs font-medium text-slate-700 mt-1">{ad.assets.length} files ready</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-semibold text-slate-600">AI Confidence</p>
+                        <p className="text-sm font-bold text-[#0A1628]">{ad.confidence}%</p>
+                      </div>
+                      <div className="w-full bg-gradient-to-r from-slate-200 to-slate-100 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#1E3A5F] to-[#C9A962]"
+                          style={{ width: `${ad.confidence}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      {ad.status === 'ready_for_review' && (
+                        <>
+                          <button className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            Approve & Queue
+                          </button>
+                          <button className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 border border-slate-300">
+                            <Edit3 className="w-4 h-4" />
+                            Edit Brief
+                          </button>
+                        </>
+                      )}
+                      {ad.status === 'generating' && (
+                        <div className="w-full px-4 py-2 bg-amber-50 border border-amber-300 text-amber-700 text-sm font-medium rounded-lg text-center">
+                          Generating... (ETA: 2 minutes)
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* VIDEO PRODUCTION QUEUE */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <h3 className="font-bold text-lg text-[#0A1628] mb-4">Video Production Queue</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-slate-200">
+                    <tr>
+                      <th className="text-left py-3 px-3 font-semibold text-slate-700">Video Name</th>
+                      <th className="text-left py-3 px-3 font-semibold text-slate-700">Status</th>
+                      <th className="text-left py-3 px-3 font-semibold text-slate-700">Voiceover</th>
+                      <th className="text-left py-3 px-3 font-semibold text-slate-700">Editing</th>
+                      <th className="text-center py-3 px-3 font-semibold text-slate-700">ETA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productionQueue.map((vid) => (
+                      <tr key={vid.id} className="border-b border-slate-100 hover:bg-slate-50">
+                        <td className="py-3 px-3 font-medium text-[#0A1628]">{vid.name}</td>
+                        <td className="py-3 px-3">
+                          <span className={`text-xs font-semibold px-2 py-1 rounded border ${
+                            vid.status === 'Script Ready' ? 'bg-blue-100 text-blue-700 border-blue-300' :
+                            vid.status === 'Approved' ? 'bg-green-100 text-green-700 border-green-300' :
+                            'bg-amber-100 text-amber-700 border-amber-300'
+                          }`}>
+                            {vid.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-sm">
+                          {vid.voiceover === 'Complete' ? <span className="text-emerald-600 font-medium">✓ {vid.voiceover}</span> : <span className="text-slate-600">{vid.voiceover}</span>}
+                        </td>
+                        <td className="py-3 px-3 text-sm text-slate-600">{vid.editing}</td>
+                        <td className="py-3 px-3 text-center font-semibold text-[#0A1628]">{vid.eta}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* TAB: PUBLISH */}
+        {activeTab === 'publish' && (
+          <div className="space-y-8">
+            {/* PHASE 2 VISION BANNER */}
+            <div className="p-4 bg-gradient-to-r from-[#C9A962]/10 to-[#C9A962]/5 border border-[#C9A962]/30 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Rocket className="w-4 h-4 text-[#C9A962]" />
+                <p className="text-sm font-bold text-[#0A1628]">Phase 2 Vision: Campaign Publishing</p>
+              </div>
+              <p className="text-xs text-slate-600">
+                One-click campaign deployment to Meta Ads, automated budget allocation, and weekly client reports via Telegram. Weeks 7–8 deliverable.
+              </p>
+            </div>
+
+            {/* READY TO LAUNCH */}
+            <section>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-[#0A1628]">
+                  Ready to Launch
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  Campaigns staged and queued for deployment.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {readyToLaunch.map((campaign, idx) => (
+                  <div key={idx} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow-sm border border-green-200 p-6 hover:shadow-md transition-all">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-[#0A1628] text-lg mb-1">{campaign.name}</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                          <div>
+                            <p className="text-xs text-slate-600 font-medium">Platform</p>
+                            <p className="text-sm font-semibold text-[#0A1628]">{campaign.platform}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-600 font-medium">Budget</p>
+                            <p className="text-sm font-semibold text-[#0A1628]">{campaign.budget}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-600 font-medium">Audience</p>
+                            <p className="text-sm font-semibold text-[#0A1628]">{campaign.audience}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-600 font-medium">Launch Date</p>
+                            <p className="text-sm font-semibold text-[#0A1628]">{campaign.startDate}</p>
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <p className="text-xs text-slate-600 font-medium">Est. ROAS: <span className="font-bold text-emerald-600">{campaign.estimatedRoas}</span></p>
+                        </div>
+                      </div>
+                      <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap">
+                        <Rocket className="w-4 h-4" />
+                        Launch Now
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ACTIVE CAMPAIGNS */}
+            <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <h3 className="font-bold text-lg text-[#0A1628] mb-4">Active Campaigns (Live)</h3>
+              <div className="space-y-3">
+                {activeCampaigns.map((camp, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                    <div className="flex-1">
+                      <p className="font-semibold text-[#0A1628] text-sm">{camp.name}</p>
+                      <p className="text-xs text-slate-600 mt-1">{camp.platform} · {camp.daysActive} days active</p>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="text-right">
+                        <p className="text-xs text-slate-600">Daily Spend</p>
+                        <p className="font-semibold text-[#0A1628]">{formatDKK(camp.dailySpend)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-600">Daily Revenue</p>
+                        <p className="font-semibold text-emerald-600">{formatDKK(camp.dailyRevenue)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-600">ROAS</p>
+                        <p className={`font-bold text-lg ${getROASColor(camp.roas)}`}>{camp.roas.toFixed(1)}x</p>
+                      </div>
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full border whitespace-nowrap ${
+                        camp.status === 'running' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-amber-100 text-amber-700 border-amber-300'
+                      }`}>
+                        {camp.status === 'running' ? '● Running' : '⚠ Monitoring'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* WEEKLY REPORT DRAFT */}
+            <section className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg shadow-sm border border-purple-200 p-6">
+              <h3 className="font-bold text-lg text-[#0A1628] mb-3">Weekly Report Draft</h3>
+              <div className="bg-white rounded-lg p-4 border border-purple-200 mb-4">
+                <p className="font-semibold text-[#0A1628] mb-2">Uge 15 — Kjeldgaard Performance Report</p>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  Omsætning: 153.126 DKK (+12%) · ROAS: 5.18x · 3 nye annoncer klar til godkendelse · 1 kilde lukket (AN, -77% ROI) · 2 kampagner planlagt lancering i morgen · Budget reallokeringsstrategi godkendt for Problem Aware segmentet
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                  <Send className="w-4 h-4" />
+                  Send via Telegram
+                </button>
+                <button className="flex-1 px-4 py-2 bg-white hover:bg-slate-50 text-[#0A1628] font-semibold rounded-lg transition-colors border border-purple-300 flex items-center justify-center gap-2">
+                  <Edit3 className="w-4 h-4" />
+                  Edit Report
+                </button>
+              </div>
+            </section>
+          </div>
+        )}
+      </main>
+
+      {/* FOOTER */}
+      <footer className="text-center py-8 border-t border-slate-200 text-slate-600 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-2">
+          <div className="flex items-center gap-4 text-xs">
+            <span className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full">
+              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+              <span className="font-semibold text-blue-700">ClickMagick</span>
+              <span className="text-blue-600">Data Layer</span>
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1 bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-full">
+              <span className="w-1.5 h-1.5 bg-[#C9A962] rounded-full"></span>
+              <span className="font-semibold text-[#0A1628]">SantoraReplica AI</span>
+              <span className="text-slate-600">Intelligence Layer</span>
+            </span>
+          </div>
+          <p className="text-xs text-slate-500">
+            Claude Opus 4.6 · Schwartz Framework · 4-Hook Model · Last sync: Apr 9, 2026 08:00
+          </p>
+        </div>
+      </footer>
+      </div>{/* END MAIN CONTENT */}
+    </div>
+  );
+};
+
+export default KjeldgaardDashboard;
+
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(KjeldgaardDashboard));
+  </script>
+</body>
+</html>
