@@ -17,11 +17,34 @@
 <body>
   <div id="root"></div>
   <script>
+try {
 const {
   useState,
   useRef,
   useEffect
 } = React;
+const _lucide = typeof lucideReact !== 'undefined' && lucideReact || typeof LucideReact !== 'undefined' && LucideReact || typeof window !== 'undefined' && window.lucideReact || typeof window !== 'undefined' && window.LucideReact || {};
+const FallbackIcon = props => React.createElement('svg', {
+  xmlns: 'http://www.w3.org/2000/svg',
+  width: 24,
+  height: 24,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  className: props.className
+}, React.createElement('circle', {
+  cx: 12,
+  cy: 12,
+  r: 10
+}));
+const iconNames = ['AlertTriangle', 'TrendingUp', 'TrendingDown', 'ArrowRight', 'Zap', 'Target', 'Eye', 'BarChart3', 'Sparkles', 'Shield', 'CheckCircle', 'Bell', 'Rocket', 'Play', 'Clock', 'ChevronRight', 'Send', 'Edit3', 'Filter', 'Pause2', 'MoreVertical', 'MessageSquare', 'Users', 'Lightbulb', 'ThumbsUp', 'ThumbsDown', 'Minus', 'X', 'PanelLeftOpen', 'PanelLeftClose', 'Brain', 'UserCircle', 'Bot'];
+const icons = {};
+iconNames.forEach(name => {
+  icons[name] = _lucide[name] || FallbackIcon;
+});
 const {
   AlertTriangle,
   TrendingUp,
@@ -56,7 +79,8 @@ const {
   Brain,
   UserCircle,
   Bot
-} = lucideReact;
+} = icons;
+const _recharts = typeof Recharts !== 'undefined' && Recharts || {};
 const {
   AreaChart,
   Area,
@@ -71,7 +95,7 @@ const {
   Pie,
   LineChart,
   Line
-} = Recharts;
+} = _recharts;
 const KjeldgaardDashboard = () => {
   const [resolveClicked, setResolveClicked] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -1758,8 +1782,9 @@ const KjeldgaardDashboard = () => {
   }, "Claude Opus 4.6 \xB7 Schwartz Framework \xB7 4-Hook Model \xB7 Last sync: Apr 9, 2026 08:00")))));
 };
 export default KjeldgaardDashboard;
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(KjeldgaardDashboard));
+} catch(e) {
+  document.getElementById('root').innerHTML = '<div style="padding:40px;font-family:system-ui;max-width:800px;margin:0 auto"><h1 style="color:#0A1628">KJELDGAARD — Loading Error</h1><pre style="background:#f1f5f9;padding:16px;border-radius:8px;overflow:auto">' + e.message + '</pre></div>';
+}
   </script>
 </body>
 </html>
